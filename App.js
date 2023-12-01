@@ -5,13 +5,14 @@ import MovieList from "./components/MovieList";
 import MovieListHeading from "./components/MovieListHeading";
 import SearchBox from "./components/SearchBox";
 import AddFavourites from "./components/AddFavourites";
+import RemoveFavourites from "./components/RemoveFavourites";
 
 function App () {
     const [movies, setMovies] = useState([]);
     const [favourites, setFavourites] = useState([]);
     const [searchValue, setSearchValue] = useState('');
 
-        const getMoviesRequest = async(searchValue) => {
+        const getMovieRequest = async(searchValue) => {
             const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=8d796495`;
             // 일반 문자열이 아닌 템플릿 문자열이 되는것 
 
@@ -23,33 +24,55 @@ function App () {
             }
         };
         useEffect(() => {
-            getMoviesRequest(searchValue);
+            getMovieRequest(searchValue);
         }, [searchValue]);
 
-        const AddFavouriteMovie = (movie) =>{
+        useEffect(()=>{
+            const movieFavourites = JSON.parse(localStorage.getItem('react-movie-app-favourites')
+            );
+            setFavourites(movieFavourites);
+        },[]);
+
+        const saveToLocalStorage = (items) => {
+            localStorage.setItem('react-movie-app=favourites',JSON.stringify(items))
+            
+        };
+
+        const addFavouriteMovie = (movie) =>{
             const newFavouriteList = [...favourites, movie];
             setFavourites(newFavouriteList);
+            saveToLocalStorage(newFavouriteList);
+        }
+
+        const removeFavouriteMovie = (movie) => {
+            const newFravouriteList = favourites.filter((favourite)=> favourite.imdbID !== movie.imdbID
+            );
+
+            setFavourites(newFravouriteList);
+            saveToLocalStorage(newFravouriteList);
         }
     return(
         <div className="container-fluid movie-app">
-            <div className='row d-flex align-items-center mt-4 mb-4'>
-             <MovieListHeading heading="movies"/>
+            <div className="row d-flex align-items-center mt-4 mb-4">
+             <MovieListHeading heading="Movies"/>
              <SearchBox searchValue={searchValue} setSearchValue={setSearchValue}/>
-            </div>
-            <div className='row'>
+             <div className='row'>
             <MovieList movies={movies} 
-            handleFavouritesClick={AddFavouriteMovie}
+            handleFavouritesClick={addFavouriteMovie}
             favouriteComponent={AddFavourites}/>
+            
             </div>
-            <div className='row d-flex align-items-center mt-4 mb-4'>
+            
+            </div>
+            <div className="row d-flex align-items-center mt-4 mb-4">
              <MovieListHeading heading="Favourites"/>
              
             </div>
             <div className='row'>
             <MovieList 
             movies={favourites} 
-            handleFavouritesClick={AddFavouriteMovie}
-            favouriteComponent={AddFavourites}
+            handleFavouritesClick={addFavouriteMovie}
+            favouriteComponent={RemoveFavourites}
             />
             </div>
         </div>
