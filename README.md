@@ -7,4 +7,7 @@ this responsive  Movie app that i built from the beginning and got the data from
 - Bootstrap
 - OMDB API
 - Postman
+# PREVIEW 
+![Uploading movie-app PREVIEW.PNG…]()
+
 
